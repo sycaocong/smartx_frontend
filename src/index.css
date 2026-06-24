@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0B0E11;
+    color: #EAECEF;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #1E2329;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #3D4450;
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #5E6673;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-bg-dark font-semibold py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors duration-200;
+  }
+  
+  .btn-primary-sm {
+    @apply bg-primary text-bg-dark font-semibold py-1.5 px-3 rounded-lg text-sm hover:bg-primary-hover transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-bg-hover text-text-primary font-semibold py-2 px-4 rounded-lg hover:bg-border-color transition-colors duration-200;
+  }
+  
+  .btn-secondary-sm {
+    @apply bg-bg-hover text-text-primary font-semibold py-1.5 px-3 rounded-lg text-sm hover:bg-border-color transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-bg-card border border-border-color rounded-xl;
+  }
+  
+  .card-hover {
+    @apply card hover:border-primary/30 transition-all duration-300;
+  }
+  
+  .input-field {
+    @apply bg-bg-input border border-border-color rounded-lg px-4 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-primary transition-colors duration-200;
+  }
+  
+  .input-field-sm {
+    @apply bg-bg-input border border-border-color rounded-lg px-3 py-1.5 text-text-primary text-sm placeholder-text-muted focus:outline-none focus:border-primary transition-colors duration-200;
+  }
+  
+  .price-up {
+    @apply text-green;
+  }
+  
+  .price-down {
+    @apply text-red;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+  
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary/20 via-primary/10 to-transparent;
+  }
+  
+  .gradient-card {
+    @apply bg-gradient-to-br from-bg-card to-bg-card/80;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
