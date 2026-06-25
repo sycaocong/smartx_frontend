@@ -139,12 +139,28 @@ export async function apiDelete<T>(endpoint: string): Promise<ApiResponse<T>> {
 }
 
 export const binanceApi = {
-  get24hrTicker: () => apiGet<unknown[]>('/v3/ticker/24hr'),
+  get24hrTicker: () => apiGet<unknown[]>('/binance/v3/ticker/24hr'),
   getKlines: (symbol: string, interval: string, limit?: string) =>
-    apiGet<unknown[]>(`/v3/klines`, { symbol, interval, limit: limit || '100' }),
+    apiGet<unknown[]>(`/binance/v3/klines`, { symbol, interval, limit: limit || '100' }),
   getOrderBook: (symbol: string, limit?: string) =>
-    apiGet<unknown>(`/v3/depth`, { symbol, limit: limit || '100' }),
-  getPrice: (symbol: string) => apiGet<unknown>(`/v3/ticker/price`, { symbol }),
+    apiGet<unknown>(`/binance/v3/depth`, { symbol, limit: limit || '100' }),
+  getPrice: (symbol: string) => apiGet<unknown>(`/binance/v3/ticker/price`, { symbol }),
+}
+
+export const matchingEngineApi = {
+  health: () => apiGet<{ status: string }>('/health'),
+  getTicker: (symbol: string) => apiGet<any>(`/market/ticker/${symbol}`),
+  getOrderBook: (symbol: string, limit?: string) =>
+    apiGet<any>(`/market/orderbook/${symbol}`, limit ? { limit } : undefined),
+  createOrder: (order: {
+    symbol: string
+    side: 'BUY' | 'SELL'
+    type: 'LIMIT' | 'MARKET'
+    price?: number
+    quantity: number
+  }) => apiPost<any>('/orders', order),
+  cancelOrder: (orderId: string) => apiDelete<any>(`/orders/${orderId}`),
+  getOrder: (orderId: string) => apiGet<any>(`/orders/${orderId}`),
 }
 
 export const smartXApi = {

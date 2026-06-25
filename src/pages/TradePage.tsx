@@ -4,11 +4,12 @@ import { useMarketStore } from '../stores/marketStore'
 import { useOrderStore } from '../stores/orderStore'
 import { useWalletStore } from '../stores/walletStore'
 import { useUserStore } from '../stores/userStore'
-import { useBinanceWS, useInitialOrderBook } from '../hooks/useBinanceWS'
+import { useMatchingEngineWS, useInitialOrderBook } from '../hooks/useBinanceWS'
 import { getKlines } from '../utils/binance'
 import { formatPrice, formatQuantity, getPriceColorClass } from '../utils/format'
 import { TRADING_PAIRS, CHART_INTERVALS } from '../constants/tradingPairs'
 import { createChart, IChartApi, ISeriesApi, CandlestickData, Time, ColorType } from 'lightweight-charts'
+import { matchingEngineApi } from '../services/api'
 
 function ChartComponent({ symbol, interval }: { symbol: string; interval: string }) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
@@ -231,44 +232,63 @@ function TradeFormComponent() {
     }
   }
 
-  const handleSubmit = () => {
-    if (!quantity || !price) return
+  const handleSubmit = async () => {
+    if (!quantity || (type === 'LIMIT' && !price)) return
 
-    addOrder({
-      pair: selectedPair,
-      type,
-      side,
-      price,
-      quantity,
-      filled: '0',
-      status: 'NEW',
-      id: '',
-      createTime: Date.now(),
-    })
+    try {
+      const response = await matchingEngineApi.createOrder({
+        symbol: selectedPair,
+        side,
+        type,
+        price: type === 'LIMIT' ? parseFloat(price) : undefined,
+        quantity: parseFloat(quantity),
+      })
 
-    if (side === 'BUY') {
-      const cost = parseFloat(price) * parseFloat(quantity)
-      addTransaction({
-        type: 'TRADE',
-        asset: pairInfo.quoteAsset,
-        amount: `-${cost.toFixed(2)}`,
-        status: 'SUCCESS',
-        id: '',
-        createTime: Date.now(),
-      })
-    } else {
-      addTransaction({
-        type: 'TRADE',
-        asset: pairInfo.baseAsset,
-        amount: `-${quantity}`,
-        status: 'SUCCESS',
-        id: '',
-        createTime: Date.now(),
-      })
+      if (response.success && response.data) {
+        const order = response.data
+        addOrder({
+          pair: selectedPair,
+          type,
+          side,
+          price: (order.price || 0).toString(),
+          quantity: (order.quantity || 0).toString(),
+          filled: (order.filled_qty || 0).toString(),
+          status: order.status || 'NEW',
+          id: order.order_id || '',
+          createTime: order.create_time || Date.now(),
+        })
+
+        if (side === 'BUY') {
+          const cost = parseFloat(price || '0') * parseFloat(quantity)
+          addTransaction({
+            type: 'TRADE',
+            asset: pairInfo.quoteAsset,
+            amount: `-${cost.toFixed(2)}`,
+            status: 'SUCCESS',
+            id: order.order_id || '',
+            createTime: order.create_time || Date.now(),
+          })
+        } else {
+          addTransaction({
+            type: 'TRADE',
+            asset: pairInfo.baseAsset,
+            amount: `-${quantity}`,
+            status: 'SUCCESS',
+            id: order.order_id || '',
+            createTime: order.create_time || Date.now(),
+          })
+        }
+
+        setQuantity('')
+        setAmount('')
+      } else {
+        console.error('Order creation failed:', response.error)
+        alert(language === 'zh' ? '下单失败: ' + response.error : 'Order failed: ' + response.error)
+      }
+    } catch (error) {
+      console.error('Order creation error:', error)
+      alert(language === 'zh' ? '下单失败' : 'Order failed')
     }
-
-    setQuantity('')
-    setAmount('')
   }
 
   return (
@@ -470,6 +490,21 @@ function OrderHistoryComponent() {
     return statusMap[status] || status
   }
 
+  const handleCancelOrder = async (orderId: string) => {
+    try {
+      const response = await matchingEngineApi.cancelOrder(orderId)
+      if (response.success) {
+        cancelOrder(orderId)
+      } else {
+        console.error('Cancel order failed:', response.error)
+        alert(language === 'zh' ? '取消订单失败: ' + response.error : 'Cancel order failed: ' + response.error)
+      }
+    } catch (error) {
+      console.error('Cancel order error:', error)
+      alert(language === 'zh' ? '取消订单失败' : 'Cancel order failed')
+    }
+  }
+
   return (
     <div className="card p-4">
       <div className="flex gap-2 mb-4">
@@ -541,7 +576,7 @@ function OrderHistoryComponent() {
                 </td>
                 <td className="py-2 text-right">
                   {order.status === 'NEW' && (
-                    <button onClick={() => cancelOrder(order.id)} className="text-red text-xs hover:underline">
+                    <button onClick={() => handleCancelOrder(order.id)} className="text-red text-xs hover:underline">
                       {language === 'zh' ? '取消' : 'Cancel'}
                     </button>
                   )}
@@ -620,7 +655,7 @@ export function TradePage() {
     }
   }, [pair, setSelectedPair])
 
-  useBinanceWS(selectedPair)
+  useMatchingEngineWS(selectedPair)
   useInitialOrderBook(selectedPair)
 
   const currentTicker = tickers.find((t) => t.symbol === selectedPair)

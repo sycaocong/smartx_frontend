@@ -13,15 +13,19 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
-      '/api': {
-        target: 'https://api.binance.com',
+      '/api/v1': {
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/ws': {
-        target: 'wss://stream.binance.com:9443',
+        target: 'ws://localhost:8080',
         ws: true,
         changeOrigin: true,
+      },
+      '/binance': {
+        target: 'https://api.binance.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/binance/, ''),
       },
     },
   },
