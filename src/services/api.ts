@@ -149,18 +149,18 @@ export const binanceApi = {
 
 export const matchingEngineApi = {
   health: () => apiGet<{ status: string }>('/health'),
-  getTicker: (symbol: string) => apiGet<any>(`/market/ticker/${symbol}`),
+  getTicker: (symbol: string) => apiGet<any>(`/v1/market/ticker/${symbol}`),
   getOrderBook: (symbol: string, limit?: string) =>
-    apiGet<any>(`/market/orderbook/${symbol}`, limit ? { limit } : undefined),
+    apiGet<any>(`/v1/market/orderbook/${symbol}`, limit ? { limit } : undefined),
   createOrder: (order: {
     symbol: string
     side: 'BUY' | 'SELL'
     type: 'LIMIT' | 'MARKET'
     price?: number
     quantity: number
-  }) => apiPost<any>('/orders', order),
-  cancelOrder: (orderId: string) => apiDelete<any>(`/orders/${orderId}`),
-  getOrder: (orderId: string) => apiGet<any>(`/orders/${orderId}`),
+  }) => apiPost<any>('/v1/orders', order),
+  cancelOrder: (orderId: string) => apiDelete<any>(`/v1/orders/${orderId}`),
+  getOrder: (orderId: string) => apiGet<any>(`/v1/orders/${orderId}`),
 }
 
 export const smartXApi = {
