@@ -11,6 +11,7 @@ export interface UserInfo {
   accountType: 'DEMO' | 'REAL'
   createdAt: number
   twoFactorEnabled: boolean
+  walletAddress?: string
 }
 
 export interface UserStats {

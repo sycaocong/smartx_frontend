@@ -31,6 +31,7 @@ const demoUser: UserInfo = {
   accountType: 'DEMO',
   createdAt: Date.now() - 86400000 * 30,
   twoFactorEnabled: false,
+  walletAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f7AAA',
 }
 
 const demoStats: UserStats = {

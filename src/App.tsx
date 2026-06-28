@@ -9,9 +9,12 @@ import { useWalletStore } from './stores/walletStore'
 import { getTickers24hr } from './utils/binance'
 
 const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })))
-const TradePage = lazy(() => import('./pages/TradePage').then((m) => ({ default: m.TradePage })))
+const TradePage = lazy(() => import('./pages/TradePage').then((m) => ({ default: m.default })))
 const MarketPage = lazy(() => import('./pages/MarketPage').then((m) => ({ default: m.MarketPage })))
 const WalletPage = lazy(() => import('./pages/WalletPage').then((m) => ({ default: m.WalletPage })))
+const DepositPage = lazy(() => import('./pages/DepositPage').then((m) => ({ default: m.DepositPage })))
+const WithdrawPage = lazy(() => import('./pages/WithdrawPage').then((m) => ({ default: m.WithdrawPage })))
+const TransferPage = lazy(() => import('./pages/TransferPage').then((m) => ({ default: m.TransferPage })))
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })))
 
 function AppContent() {
@@ -53,6 +56,9 @@ function AppContent() {
             <Route path="/trade/:pair" element={<TradePage />} />
             <Route path="/market" element={<MarketPage />} />
             <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/wallet/deposit/:asset" element={<DepositPage />} />
+            <Route path="/wallet/withdraw/:asset" element={<WithdrawPage />} />
+            <Route path="/wallet/transfer" element={<TransferPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </Suspense>

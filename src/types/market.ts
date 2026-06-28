@@ -32,6 +32,22 @@ export interface Ticker24hr {
   totalTrades: number
 }
 
+export interface TickerData {
+  symbol: string
+  last_price: number
+  bid_price: number
+  ask_price: number
+  bid_qty: number
+  ask_qty: number
+  volume_24h: number
+  quote_volume_24h: number
+  high_24h: number
+  low_24h: number
+  price_change: number
+  price_change_pct: number
+  timestamp: number
+}
+
 export interface KlineData {
   openTime: number
   open: string
@@ -55,10 +71,18 @@ export interface OrderBook {
   asks: OrderBookLevel[]
 }
 
+export interface OrderBookResponse {
+  symbol: string
+  version: number
+  timestamp: number
+  bids: [number, number][]
+  asks: [number, number][]
+}
+
 export interface Trade {
-  id: number
+  id: string
   price: string
-  qty: string
+  quantity: string
   time: number
   isBuyerMaker: boolean
 }
@@ -75,4 +99,12 @@ export interface CandlestickData {
 export interface SparklineData {
   time: number
   price: number
+}
+
+export interface WSMessage {
+  type: string
+  topic: string
+  symbol: string
+  data: any
+  time: number
 }
